@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">AnecdotesApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="button1">1 - Анекдот</string>
+    <string name="button2">2 - Рассказы</string>
+    <string name="button3">3 - Стишки</string>
+    <string name="button4">4 - Афоризмы</string>
+    <string name="button5">5 - Цитаты</string>
+    <string name="button6">6 - Тосты</string>
+    <string name="button8">8 - Статусы</string>
+    <string name="button11">11 - Анекдот (+18)</string>
+    <string name="button12">12 - Рассказы (+18);</string>
+    <string name="button13">13 - Стишки (+18)</string>
+    <string name="button14">14 - Афоризмы (+18)</string>
+    <string name="button15">15 - Цитаты (+18)</string>
+    <string name="button16">16 - Тосты (+18)</string>
+    <string name="button18">18 - Статусы (+18)</string>
 </resources>
