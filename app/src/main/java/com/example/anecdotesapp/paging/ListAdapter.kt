@@ -7,7 +7,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anecdotesapp.databinding.ListItemBinding
-import com.example.pokedex.room.BaseAnecdote
+import com.example.anecdotesapp.room.BaseAnecdote
 
 class ListAdapter : PagingDataAdapter<BaseAnecdote, ListAdapter.MyViewHolder>(DIFF_CALBACK) {
 

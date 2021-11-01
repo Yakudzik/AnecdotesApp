@@ -2,15 +2,18 @@ package com.example.anecdotesapp.retrofit
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AnecdoteApi {
 
-    @GET("/RandJSON.aspx?CType={id}")
-    suspend fun getJoke(@Path("id") number: Int): retrofit2.Call<String>
+    @GET("/RandJSON.aspx")
+      fun getJoke(@Query("CType") number: Int): Call<String>
 
     companion object {
         fun invoke(): AnecdoteApi {
@@ -25,7 +28,7 @@ interface AnecdoteApi {
             return Retrofit.Builder()
                 .baseUrl("http://rzhunemogu.ru/")
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
                 .build()
                 .create(AnecdoteApi::class.java)
         }
