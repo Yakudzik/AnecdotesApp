@@ -10,6 +10,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.anecdotesapp.databinding.FragmentMenuBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -24,10 +26,24 @@ class MenuFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentMenuBinding.inflate(inflater, container, false)
 
+        CoroutineScope(Dispatchers.IO).launch {
+            viewModel.instance.anecdoteDao().nukeTable()
+        }
+
         binding.button1ID.setOnClickListener {
             lifecycleScope.launch {
-                viewModel.getJokesResponse(1)
-                //findNavController( ).navigate(R.id.contentFragment)
+                viewModel.categoryNumber.observe(viewLifecycleOwner, {
+                    viewModel.setCategoryNum(1)
+                })
+                findNavController().navigate(R.id.contentFragment)
+            }
+        }
+        binding.button2ID.setOnClickListener {
+            lifecycleScope.launch {
+                viewModel.categoryNumber.observe(viewLifecycleOwner, {
+                    viewModel.setCategoryNum(2)
+                })
+                findNavController().navigate(R.id.contentFragment)
             }
         }
 

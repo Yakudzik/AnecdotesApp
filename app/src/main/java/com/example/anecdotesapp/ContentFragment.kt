@@ -13,10 +13,8 @@ import com.example.anecdotesapp.databinding.FragmentContentBinding
 import com.example.anecdotesapp.paging.ListAdapter
 import com.example.anecdotesapp.room.AnecdoteDataBase
 import com.example.anecdotesapp.room.BaseAnecdote
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 
 class ContentFragment : Fragment() {
@@ -35,12 +33,13 @@ class ContentFragment : Fragment() {
         var recyclerView = binding.recyclerViewID
         recyclerView.adapter = adapter
 
-        lifecycleScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             @OptIn(ExperimentalCoroutinesApi::class)
-          //  viewModel.getRepeatResponse(30)
+
             viewModel.item.collectLatest {
                 adapter.submitData(it)
-            }
+                 adapter.itemCount
+             }
         }
 
         return binding.root

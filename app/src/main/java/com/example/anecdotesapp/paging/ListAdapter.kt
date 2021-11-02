@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.anecdotesapp.databinding.ListItemBinding
 import com.example.anecdotesapp.room.BaseAnecdote
 
-class ListAdapter : PagingDataAdapter<BaseAnecdote, ListAdapter.MyViewHolder>(DIFF_CALBACK) {
+class ListAdapter : PagingDataAdapter<BaseAnecdote, ListAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     private val LOG_TAG = "listAdapter"
 
     companion object {
-        private var DIFF_CALBACK = object : DiffUtil.ItemCallback<BaseAnecdote>() {
+        private var DIFF_CALLBACK = object : DiffUtil.ItemCallback<BaseAnecdote>() {
             override fun areItemsTheSame(oldItem: BaseAnecdote, newItem: BaseAnecdote)
                     : Boolean = oldItem.id == newItem.id
 
