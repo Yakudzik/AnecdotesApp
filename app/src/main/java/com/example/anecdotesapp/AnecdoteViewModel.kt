@@ -5,13 +5,16 @@ import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import com.example.anecdotesapp.paging.JokePagingSourse
+import com.example.anecdotesapp.paging.JokePagingSource
 import com.example.anecdotesapp.retrofit.AnecdoteApi
 import com.example.anecdotesapp.room.AnecdoteDataBase
 import com.example.anecdotesapp.room.BaseAnecdote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttp
+import okhttp3.OkHttpClient
 import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.await
 
 class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
@@ -23,47 +26,49 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
 
     private lateinit var response: Response<String>
 
-//    val instance = Room.databaseBuilder(
-//        app,
-//        AnecdoteDataBase::class.java,
-//        "top_anecdotes"
-//    ).fallbackToDestructiveMigration().build()
+    var title = ""
 
+    //db instance
     val instance = AnecdoteDataBase.getDatabase(app)
 
+    //pager setup
     val item = Pager(
         PagingConfig(
             enablePlaceholders = true,
             pageSize = 10
         )
-    ) { JokePagingSourse(this) }.flow
+    ) { JokePagingSource(this) }.flow
 
-    suspend fun getJokesResponse() {
-       val category = _categoryNumber.value
+    //get response and add answer 2 base
+    private suspend fun getJokesResponse() {
+        val category = _categoryNumber.value
         response = Response.success(category?.let { AnecdoteApi.invoke().getJoke(it).await() })
 
         if (response.isSuccessful) {
             val result = response.body()
             joke = BaseAnecdote(0, result.toString())
             addJoke2Base(joke)
-
+        } else {
+            Log.i("Response error", response.errorBody().toString())
         }
     }
 
+    //add content to base
     private fun addJoke2Base(j: BaseAnecdote) {
         viewModelScope.launch(Dispatchers.IO) {
             instance.anecdoteDao().addAnecdote(joke)
-            Log.i("Add element", j.anecdoteStr)
-
+            //  Log.i("Add element", j.anecdoteStr)
         }
     }
 
-    suspend fun getNewContentPartResponse(  ) {
+    //get content pack
+    suspend fun getNewContentPartResponse() {
         for (i in 0 until 10) {
-            getJokesResponse( )
+            getJokesResponse()
         }
     }
-    fun setCategoryNum(categoryNum:Int){
+
+    fun setCategoryNum(categoryNum: Int) {
         _categoryNumber.postValue(categoryNum)
     }
 }

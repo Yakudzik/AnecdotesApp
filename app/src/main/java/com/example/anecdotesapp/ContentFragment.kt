@@ -6,10 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import com.example.anecdotesapp.databinding.FragmentContentBinding
+import com.example.anecdotesapp.paging.JokeLoadStateAdapter
 import com.example.anecdotesapp.paging.ListAdapter
 import com.example.anecdotesapp.room.AnecdoteDataBase
 import com.example.anecdotesapp.room.BaseAnecdote
@@ -29,17 +31,23 @@ class ContentFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentContentBinding.inflate(inflater, container, false)
 
+        (activity as AppCompatActivity).supportActionBar?.title = viewModel.title
+
         adapter = ListAdapter()
+
         var recyclerView = binding.recyclerViewID
-        recyclerView.adapter = adapter
+        recyclerView.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = JokeLoadStateAdapter(adapter),
+            footer = JokeLoadStateAdapter(adapter)
+        )
 
         CoroutineScope(Dispatchers.IO).launch {
-            @OptIn(ExperimentalCoroutinesApi::class)
+            //    @OptIn(ExperimentalCoroutinesApi::class)
 
             viewModel.item.collectLatest {
                 adapter.submitData(it)
-                 adapter.itemCount
-             }
+                adapter.itemCount
+            }
         }
 
         return binding.root

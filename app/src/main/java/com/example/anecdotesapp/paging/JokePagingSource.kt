@@ -10,11 +10,7 @@ import com.example.anecdotesapp.retrofit.AnecdoteApi
 import com.example.anecdotesapp.room.AnecdotsDao
 import com.example.anecdotesapp.room.BaseAnecdote
 
-class JokePagingSourse( val viewModel: AnecdoteViewModel) : PagingSource<Int, BaseAnecdote>() {
-
-//    private companion object {
-//        const val INITIAL_PAGE_INDEX = 0
-//    }
+class JokePagingSource(private val viewModel: AnecdoteViewModel) : PagingSource<Int, BaseAnecdote>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BaseAnecdote> {
         val pagePosition = params.key ?: 0

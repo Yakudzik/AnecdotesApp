@@ -16,4 +16,6 @@
     <string name="button15">15 - Цитаты (+18)</string>
     <string name="button16">16 - Тосты (+18)</string>
     <string name="button18">18 - Статусы (+18)</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="retry">Retry</string>
 </resources>
