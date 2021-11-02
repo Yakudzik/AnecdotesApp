@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
 import androidx.room.Room
 import com.example.anecdotesapp.databinding.FragmentContentBinding
 import com.example.anecdotesapp.paging.JokeLoadStateAdapter
@@ -40,6 +43,12 @@ class ContentFragment : Fragment() {
             header = JokeLoadStateAdapter(adapter),
             footer = JokeLoadStateAdapter(adapter)
         )
+
+        adapter.addLoadStateListener { state:CombinedLoadStates ->
+            binding.recyclerViewID.isVisible = state.refresh != LoadState.Loading
+            binding.progressBarID.isVisible = state.refresh == LoadState.Loading
+
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             //    @OptIn(ExperimentalCoroutinesApi::class)

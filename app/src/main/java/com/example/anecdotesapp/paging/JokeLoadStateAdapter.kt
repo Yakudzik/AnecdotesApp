@@ -8,17 +8,20 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anecdotesapp.databinding.ErrorItemBinding
 import com.example.anecdotesapp.databinding.ListItemBinding
+import java.util.jar.Pack200.Packer.ERROR
+import java.util.jar.Pack200.Packer.PROGRESS
 
 class JokeLoadStateAdapter(private val adapter: ListAdapter) :
     LoadStateAdapter<JokeLoadStateAdapter.ViewHolder>() {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
         return ViewHolder(
-            ErrorItemBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ), adapter
-        )
-    }
+                ErrorItemBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                ), adapter
+            )
+        }
 
     override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) = holder.bind(loadState)
 
