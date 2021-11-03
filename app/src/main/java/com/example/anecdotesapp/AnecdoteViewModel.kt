@@ -46,18 +46,15 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
 
         response = Response.success(category?.let { AnecdoteApi.invoke().getJoke(it).await() })
 
-        return if (response.isSuccessful) {
-            val result = response.body()
-            joke = BaseAnecdote(0, result.toString())
+        return if (response.isSuccessful ) {
+            val result =createGoodString(response.body()!!)
+             joke = BaseAnecdote(0, result)
             addJoke2Base(joke)
             true
         } else {
             Log.i("Response error", response.errorBody().toString())
             false
-
         }
-
-
     }
 
     //add content to base
@@ -78,6 +75,12 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
             true
         }else
             false
+    }
+
+    private fun createGoodString(string: String):String{
+        var str = string.replace("{\"content\":\"","")
+        return str.replace("\"}","")
+
     }
 
     fun setCategoryNum(categoryNum: Int) {
