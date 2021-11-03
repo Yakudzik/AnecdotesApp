@@ -1,5 +1,6 @@
 package com.example.anecdotesapp.paging
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -7,46 +8,42 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.anecdotesapp.databinding.ErrorItemBinding
-import com.example.anecdotesapp.databinding.ListItemBinding
-import java.util.jar.Pack200.Packer.ERROR
-import java.util.jar.Pack200.Packer.PROGRESS
 
-class JokeLoadStateAdapter(private val adapter: ListAdapter) :
+
+class JokeLoadStateAdapter(private val retryCallback: () -> Unit) :
     LoadStateAdapter<JokeLoadStateAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
+
         return ViewHolder(
-                ErrorItemBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                ), adapter
+            ErrorItemBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
-        }
+        )
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) = holder.bind(loadState)
 
-    class ViewHolder(binding: ErrorItemBinding, adapter: ListAdapter) :
+    inner class ViewHolder(private val binding: ErrorItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-
-        private val progressBar = binding.progressBar
-        private val message = binding.errorMessageID
-        private val button = binding.retryButtonID
-//            .also {
-//            it.setOnClickListener {
-//                adapter.retry()
-//            }
-//        }
-
-        fun bind(loadState: LoadState) {
-            if (loadState is LoadState.Error) {
-                message.text = loadState.error.localizedMessage
-            }
-
-            progressBar.isVisible = loadState is LoadState.Loading
-            button.isVisible = loadState is LoadState.Error
-            message.isVisible = loadState is LoadState.Error
+        init {
+            binding.retryButtonID.setOnClickListener { retryCallback.invoke() }
         }
 
+        fun bind(loadState: LoadState) {
+            binding.apply {
+                if (loadState is LoadState.Loading) {
+                    progressBar.isVisible = true
+                    retryButtonID.isVisible = false
+                    errorMessageID.isVisible = false
+                } else {
+                    progressBar.isVisible = false
+                    retryButtonID.isVisible = loadState is LoadState.Error
+                    errorMessageID.isVisible = loadState is LoadState.Error
+                }
+            }
+        }
     }
 }

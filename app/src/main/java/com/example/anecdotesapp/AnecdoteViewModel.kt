@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
+import okio.IOException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.await
@@ -40,17 +41,23 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
     ) { JokePagingSource(this) }.flow
 
     //get response and add answer 2 base
-    private suspend fun getJokesResponse() {
+    private suspend fun getJokesResponse(): Boolean {
         val category = _categoryNumber.value
+
         response = Response.success(category?.let { AnecdoteApi.invoke().getJoke(it).await() })
 
-        if (response.isSuccessful) {
+        return if (response.isSuccessful) {
             val result = response.body()
             joke = BaseAnecdote(0, result.toString())
             addJoke2Base(joke)
+            true
         } else {
             Log.i("Response error", response.errorBody().toString())
+            false
+
         }
+
+
     }
 
     //add content to base
@@ -62,10 +69,15 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     //get content pack
-    suspend fun getNewContentPartResponse() {
-        for (i in 0 until 10) {
-            getJokesResponse()
-        }
+    suspend fun getNewContentPartResponse(): Boolean {
+        return if (getJokesResponse()) {
+            for (i in 0 until 10) {
+                getJokesResponse()
+
+            }
+            true
+        }else
+            false
     }
 
     fun setCategoryNum(categoryNum: Int) {

@@ -6,12 +6,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
+import androidx.paging.LoadState.Error
+import androidx.paging.LoadStateAdapter
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.anecdotesapp.databinding.FragmentContentBinding
 import com.example.anecdotesapp.paging.JokeLoadStateAdapter
@@ -23,8 +28,8 @@ import kotlinx.coroutines.flow.collectLatest
 
 
 class ContentFragment : Fragment() {
-    lateinit var binding: FragmentContentBinding
-    lateinit var adapter: ListAdapter
+    private lateinit var binding: FragmentContentBinding
+    private lateinit var adapter: ListAdapter
     private val viewModel: AnecdoteViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -37,20 +42,32 @@ class ContentFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = viewModel.title
 
         adapter = ListAdapter()
+        //  concatAdapter = ConcatAdapter(adapter,JokeLoadStateAdapter(adapter))
 
-        var recyclerView = binding.recyclerViewID
-        recyclerView.adapter = adapter.withLoadStateHeaderAndFooter(
-            header = JokeLoadStateAdapter(adapter),
-            footer = JokeLoadStateAdapter(adapter)
+
+        val recyclerView = binding.recyclerViewID
+        // recyclerView.adapter = concatAdapter
+        recyclerView.adapter = adapter.withLoadStateFooter(
+            footer = JokeLoadStateAdapter { adapter.retry()}
         )
 
-        adapter.addLoadStateListener { state:CombinedLoadStates ->
-            binding.recyclerViewID.isVisible = state.refresh != LoadState.Loading
-            binding.progressBarID.isVisible = state.refresh == LoadState.Loading
-
+        adapter.addLoadStateListener { state: CombinedLoadStates ->
+            binding.apply {
+                recyclerViewID.isVisible = state.refresh != LoadState.Loading
+                progressBarID.isVisible = state.refresh == LoadState.Loading
+            }
+            state.source.refresh.endOfPaginationReached
         }
+        return binding.root
+    }
 
-        CoroutineScope(Dispatchers.IO).launch {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+//        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+//            throwable.printStackTrace()
+//        }
+        CoroutineScope(Dispatchers.IO ).launch {
             //    @OptIn(ExperimentalCoroutinesApi::class)
 
             viewModel.item.collectLatest {
@@ -59,6 +76,5 @@ class ContentFragment : Fragment() {
             }
         }
 
-        return binding.root
     }
 }

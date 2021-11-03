@@ -9,20 +9,33 @@ import com.example.anecdotesapp.AnecdoteViewModel
 import com.example.anecdotesapp.retrofit.AnecdoteApi
 import com.example.anecdotesapp.room.AnecdotsDao
 import com.example.anecdotesapp.room.BaseAnecdote
+import retrofit2.HttpException
+import java.lang.Exception
 
-class JokePagingSource(private val viewModel: AnecdoteViewModel) : PagingSource<Int, BaseAnecdote>() {
+class JokePagingSource(private val viewModel: AnecdoteViewModel) :
+    PagingSource<Int, BaseAnecdote>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BaseAnecdote> {
-        val pagePosition = params.key ?: 0
-        Log.i("pagePosition", pagePosition.toString())
-        viewModel.getNewContentPartResponse()
-        var index = pagePosition*10
-        val loadSize = viewModel.instance.anecdoteDao().getTenElements(index)
-        return LoadResult.Page(
-            data = loadSize,
-            prevKey = if (pagePosition == 0) null else pagePosition - 1,
-            nextKey = if (loadSize.isNullOrEmpty()) null else pagePosition + 1
-        )
+
+        return try {
+            val pagePosition = params.key ?: 0
+            Log.i("pagePosition", pagePosition.toString())
+            if (viewModel.getNewContentPartResponse()) {
+                var index = pagePosition * 10
+                val loadSize = viewModel.instance.anecdoteDao().getTenElements(index)
+                LoadResult.Page(
+                    data = loadSize,
+                    prevKey = if (pagePosition == 0) null else pagePosition - 1,
+                    nextKey = if (loadSize.isNullOrEmpty()) null else pagePosition + 1
+                )
+            } else
+                LoadResult.Error(error("Retrofit response isnt good"))
+        } catch (e: Exception) {
+            LoadResult.Error(e)
+        } catch (e: HttpException) {
+            LoadResult.Error(e)
+        }
+
     }
 
     override fun getRefreshKey(state: PagingState<Int, BaseAnecdote>): Int? = null
