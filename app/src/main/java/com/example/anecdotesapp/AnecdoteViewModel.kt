@@ -46,9 +46,9 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
 
         response = Response.success(category?.let { AnecdoteApi.invoke().getJoke(it).await() })
 
-        return if (response.isSuccessful ) {
-            val result =createGoodString(response.body()!!)
-             joke = BaseAnecdote(0, result)
+        return if (response.isSuccessful) {
+            val result = createGoodString(response.body()!!)
+            joke = BaseAnecdote(0, result)
             addJoke2Base(joke)
             true
         } else {
@@ -61,8 +61,7 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
     private fun addJoke2Base(j: BaseAnecdote) {
         viewModelScope.launch(Dispatchers.IO) {
             instance.anecdoteDao().addAnecdote(joke)
-            //  Log.i("Add element", j.anecdoteStr)
-        }
+         }
     }
 
     //get content pack
@@ -70,20 +69,21 @@ class AnecdoteViewModel(app: Application) : AndroidViewModel(app) {
         return if (getJokesResponse()) {
             for (i in 0 until 10) {
                 getJokesResponse()
-
             }
             true
-        }else
+        } else
             false
     }
 
-    private fun createGoodString(string: String):String{
-        var str = string.replace("{\"content\":\"","")
-        return str.replace("\"}","")
-
+    private fun createGoodString(string: String): String {
+        var str = string.replace("{\"content\":\"", "")
+        return str.replace("\"}", "")
     }
 
     fun setCategoryNum(categoryNum: Int) {
         _categoryNumber.postValue(categoryNum)
+    }
+    fun getCategoryNum():Int{
+        return _categoryNumber.value!!
     }
 }

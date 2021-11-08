@@ -29,13 +29,12 @@ class JokePagingSource(private val viewModel: AnecdoteViewModel) :
                     nextKey = if (loadSize.isNullOrEmpty()) null else pagePosition + 1
                 )
             } else
-                LoadResult.Error(error("Retrofit response isnt good"))
+                LoadResult.Error(error("Retrofit response isn't good"))
         } catch (e: Exception) {
             LoadResult.Error(e)
         } catch (e: HttpException) {
             LoadResult.Error(e)
         }
-
     }
 
     override fun getRefreshKey(state: PagingState<Int, BaseAnecdote>): Int? = null

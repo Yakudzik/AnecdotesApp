@@ -18,11 +18,13 @@ interface AnecdotsDao {
     @Update
     fun updateAnecdoteData(joke: BaseAnecdote)
 
+    @Query("SELECT * FROM top_anecdotes ORDER BY id DESC LIMIT 10")
+    fun getLastTenElements(): List<BaseAnecdote>
+
     @Query("SELECT * FROM top_anecdotes LIMIT 10 OFFSET :index")
     fun getTenElements(index: Int): List<BaseAnecdote>
 
     @Query("SELECT * FROM top_anecdotes ORDER BY id ASC")
-    // fun getAllData(): LiveData<List<BaseAnecdote>>
-    fun getAllData(): PagingSource<Int, BaseAnecdote>
+     fun getAllData(): PagingSource<Int, BaseAnecdote>
 
 }
